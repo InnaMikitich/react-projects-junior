@@ -29,7 +29,7 @@ function App() {
       const price = value / ratesRef.current[fromCurrency];
       const result = price * ratesRef.current[toCurrency];
       setFromPrice(value);
-      setToPrice(result);
+      setToPrice(result.toFixed(3));
     }
   };
   const onChangeToPrice = (value) => {
@@ -37,7 +37,7 @@ function App() {
       const price = value / ratesRef.current[toCurrency];
       const result = price * ratesRef.current[fromCurrency];
       setToPrice(value);
-      setFromPrice(result);
+      setFromPrice(result.toFixed(3));
     }
   };
 

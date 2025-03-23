@@ -12,11 +12,17 @@ const cats = [
 
 function App() {
   const [categoryId, setCategoryId] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [page, setPage] = React.useState(1);
   const [collection, setCollection] = React.useState([]);
   const [searchValue, setSearchValue] = React.useState('');
 
   React.useEffect(() => {
-    fetch(`https://67daa14635c87309f52d5946.mockapi.io/collections${categoryId ? `?category=${categoryId}` : ''}`)
+    setIsLoading(true);
+    const category = categoryId ? `&category=${categoryId}` : '';
+    const pageParam = page ? `&page=${page}` : ''; 
+    
+    fetch(`https://67daa14635c87309f52d5946.mockapi.io/collections?limit=3&${category}${pageParam}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('Network response was not ok');
@@ -29,8 +35,10 @@ function App() {
       .catch((err) => {
         console.warn(err);
         alert('Ошибка получения данных');
-      });
-  }, [categoryId]);
+      }).finally(() => setIsLoading(false));
+  }, [categoryId, page]);
+
+
 
   return (
     <div className="App">
@@ -51,17 +59,23 @@ function App() {
         />
       </div>
       <div className="content">
-        {Array.isArray(collection) && collection
+        {isLoading ? (<h2>Идёт загрузка...</h2>) : (Array.isArray(collection) && collection
           .filter((obj) =>
             obj.name.toLowerCase().includes(searchValue.toLowerCase())
           ).map((obj, index) => (
             <Collection key={index} name={obj.name} images={obj.photos} />
-          ))}
+          )))}
       </div>
       <ul className="pagination">
-        <li>1</li>
-        <li className="active">2</li>
-        <li>3</li>
+       {
+        [...Array(4)].map((_, i) => (
+        <li 
+        key={i}
+        className={page === (i + 1) ? 'active' : ''}
+        onClick={() => setPage(i + 1)}
+        >
+          {i + 1}</li>
+      ))}
       </ul>
     </div>
   );
